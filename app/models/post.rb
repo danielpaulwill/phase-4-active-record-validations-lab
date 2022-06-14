@@ -5,15 +5,17 @@ class Post < ApplicationRecord
   validates :category, inclusion: { in: %w(Fiction Non-Fiction)}
   validate :title_is_click_bait
 
-  title = self.title
-  puts title
+  CLICKBAIT_PATTERNS = [
+    /Won't Believe/i,
+    /Secret/i,
+    /Top \d/i,
+    /Guess/i
+  ]
 
   def title_is_click_bait
-    title = self.title
-    if title.where('title.include = ?', "Won't Believe" || "Secret" || "Top [number]" || "Guess")
-      puts "all clear"
-    else
+    if CLICKBAIT_PATTERNS.none? {|pat| pat.match title}
       errors.add(:title, "Not click bait-y enough!")
+    end
   end
   
 end
